@@ -1,0 +1,15 @@
+.container {
+  margin-top:40px;
+  margin-right: 450px;
+  padding: 20px; /* Innenabstand für den Container */
+  border-radius: 10px; /* Abgerundete Ecken für den Container */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Schatten für den Container */
+}
+
+.col-md-6 {
+  background: linear-gradient(to right, rgb(118, 100, 66), rgba(205, 182, 124, 0.926), rgb(106, 90, 67));
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(219, 169, 5, 0.2);
+  margin-right: 420px;
+}

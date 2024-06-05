@@ -1,0 +1,88 @@
+import React, { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
+import { UserContext } from '../../contexts/UserContext';
+import Notiz from '../Notiz/Notiz';
+import './NotizListe.css';
+
+const NotizListe = () => {
+  const { user } = useContext(UserContext);
+  const [notizen, setNotizen] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('all');
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const result = await axios.get('http://localhost:3002/api/notes', {
+          params: { username: user.username }
+        });
+        setNotizen(result.data);
+      } catch (error) {
+        console.error('Error fetching notes:', error);
+      }
+    };
+
+    fetchNotes();
+  }, [user.username]);
+
+  const filteredNotes = notizen.filter(note => {
+    // Apply filters
+    const matchesFilter = filter === 'all'
+      || (filter === 'public' && note.isPublic)
+      || (filter === 'private' && !note.isPublic && note.owner === user.username);
+
+    const matchesSearchTerm = note.title.toLowerCase().includes(searchTerm.toLowerCase())
+      || note.content.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesFilter && matchesSearchTerm;
+  });
+
+  const handleBearbeiten = async (id, updatedNote) => {
+    try {
+      const result = await axios.put(`http://localhost:3002/api/notes/${id}`, updatedNote);
+      const updatedNotizen = notizen.map(note =>
+        note._id === id ? { ...note, ...result.data } : note
+      );
+      setNotizen(updatedNotizen);
+    } catch (error) {
+      console.error('Error updating note:', error);
+    }
+  };
+
+  const handleLoeschen = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3002/api/notes/${id}`);
+      setNotizen(notizen.filter(note => note._id !== id));
+    } catch (error) {
+      console.error('Error deleting note:', error);
+    }
+  };
+
+  return (
+    <div className="notiz-liste-container">
+      <input
+        type="text"
+        placeholder="Search notes..."
+        className="search-input"
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <div className="filters">
+        <button onClick={() => setFilter('all')} className="filter-btn">All</button>
+        <button onClick={() => setFilter('public')} className="filter-btn">Public</button>
+        <button onClick={() => setFilter('private')} className="filter-btn">Private</button>
+      </div>
+      <div className="note-cards">
+        {filteredNotes.map(note => (
+          <Notiz
+            key={note._id}
+            notiz={note}
+            bearbeiteNotiz={handleBearbeiten}
+            loescheNotiz={handleLoeschen}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default NotizListe;
