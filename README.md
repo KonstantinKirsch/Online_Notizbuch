@@ -8,7 +8,7 @@ Notizbuch
 <a Notizbuch="technologies"></a>
 ### Technologies
 
-## Technologies
+## Technologies 
 ***
 A list of technologies used within the project:
 * [VSCode / Änliche IDE](https://code.visualstudio.com/): Version 1.84.0
